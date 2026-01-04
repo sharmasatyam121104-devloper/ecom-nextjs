@@ -7,6 +7,7 @@ export interface IProduct extends mongoose.Document {
   discount?: number;
   slug?:string
   image:string
+  quantity:number
 }
 
 const productSchema = new Schema<IProduct>(
@@ -35,6 +36,10 @@ const productSchema = new Schema<IProduct>(
     image: {
       type: String,
       required: true,
+    },
+    quantity: {
+      type: Number,
+      required:true,
     },
   },
   { timestamps: true }

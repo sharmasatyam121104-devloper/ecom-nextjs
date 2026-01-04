@@ -32,20 +32,20 @@ export const PUT = async (req: NextRequest, context: SlugInterface) => {
   try {
     const { slug: id } = await context.params
     const body = await req.json()
-    const { title, description, price, discount } = body
+    const { title, description, price, discount,quantity } = body
 
     // Basic validation
-    if (!title && !description && !price && discount === undefined) {
+    if (!title && !description && !price && discount === undefined && quantity === undefined) {
       return res.json(
-        { error: "At least one field (title, description, price, discount) is required to update" },
+        { error: "At least one field (title, description, price, discount,quantity) is required to update" },
         { status: 400 }
       )
     }
 
     // If price or discount provided, ensure they are numbers
-    if ((price && typeof price !== "number") || (discount && typeof discount !== "number")) {
+    if ((price && typeof price !== "number") || (discount && typeof discount !== "number") || (quantity !== undefined && typeof quantity !== "number")) {
       return res.json(
-        { error: "Price and discount must be numbers" },
+        { error: "Price, discount and quantity must be numbers" },
         { status: 400 }
       )
     }
@@ -56,6 +56,8 @@ export const PUT = async (req: NextRequest, context: SlugInterface) => {
     if (description) updateData.description = description
     if (price !== undefined) updateData.price = price
     if (discount !== undefined) updateData.discount = discount
+    if (quantity !== undefined) updateData.quantity = quantity
+
 
     // Update product
     const product = await ProductModel.findOneAndUpdate(

@@ -80,14 +80,18 @@ export const GET = async(req: NextRequest)=>{
     try {
         const {searchParams} = new URL(req.url)
         const slug = searchParams.get("slug")
+        const page: number = Number(searchParams.get("page")) || 1
+        const limit: number = Number(searchParams.get("limit")) || 16
+        const skip = (page-1)*limit
 
         if(slug) {
             const slugs = await ProductModel.distinct('slug')
             return res.json({slugs})
         }
-        const products = await ProductModel.find()
 
-        return res.json({products})
+        const totalNoProduct = await ProductModel.countDocuments()
+        const products = await ProductModel.find().sort({createdAt: -1}).skip(skip).limit(limit)
+        return res.json({products,totalNoProduct})
     } 
     catch (error) {
         return serverCatchError(error)
