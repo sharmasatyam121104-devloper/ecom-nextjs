@@ -1,13 +1,24 @@
 'use client'
 import clientCatchError from '@/lib/client-catch-error'
-import {ArrowRightOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
-import { Button, Card, Divider, Form, Input, InputNumber, message, Modal, Pagination, Popconfirm, Result, Skeleton, Tag, Upload } from 'antd'
+import {
+  ArrowRightOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  SaveOutlined,
+  UploadOutlined
+} from '@ant-design/icons'
+import {
+  Button, Card, Divider, Form, Input, InputNumber,
+  message, Modal, Pagination, Popconfirm, Result, Skeleton, Tag, Upload
+} from 'antd'
 import Image from 'next/image'
 import { useState } from 'react'
 import type { UploadFile } from "antd/es/upload/interface"
 import axios from 'axios'
 import useSWR, { mutate } from 'swr'
 import fetcher from '@/lib/fetcher'
+import { debounce } from 'lodash'
 
 interface UploadValue {
   file: UploadFile
@@ -23,15 +34,19 @@ interface ProductFormValues {
 
 interface ProductInterface {
   _id:string
-  title: string;
-  description: string;
-  price: number;
-  discount?: number;
+  title: string
+  description: string
+  price: number
+  discount?: number
   slug?:string
   image:string
   quantity:number
 }
 
+interface ProductsResponse {
+  products: ProductInterface[]
+  totalNoProduct: number
+}
 
 const Products = () => {
   const [open, setOpen] = useState(false)
@@ -39,12 +54,27 @@ const Products = () => {
   const [limit, setLimit] = useState(3)
   const [editId, setEditId] = useState<string | null>(null)
   const [productForm] = Form.useForm()
-  const {data, error, isLoading} = useSWR(`/api/product?page=${page}&limit=${limit}`,fetcher)
 
+  const {data, error, isLoading} = useSWR<ProductsResponse>(
+    `/api/product?page=${page}&limit=${limit}`,
+    fetcher
+  )
 
-  const onSerach = (value:string)=>{
-    console.log(value);
-  }
+  const products = data?.products ?? []
+  const totalNoProduct = data?.totalNoProduct ?? 0
+
+  const onSearch = debounce(async(e: React.ChangeEvent<HTMLInputElement>)=>{
+    try {
+      const value = e.target.value.trim()
+      const {data} = await axios.get(`/api/product?search=${value}`)
+      // Agar search karna hai to local state use karo
+      // ya SWR mutate karo
+      mutate(`/api/product?page=${page}&limit=${limit}`, data, false)
+    } 
+    catch (error) {
+      clientCatchError(error)  
+    }
+  },500)
 
   const handleClose = ()=>{
     setOpen(false)
@@ -55,12 +85,10 @@ const Products = () => {
   const handleCreateProduct = async(values: ProductFormValues)=>{
     try {
       const imageFile: File | undefined = values.image?.file?.originFileObj
-
       if (!imageFile) {
         message.error("Image is required")
         return
       }
-
       const formData = new FormData()
       formData.append("title", values.title)
       formData.append("description", values.description)
@@ -71,7 +99,7 @@ const Products = () => {
       await axios.post('/api/product', formData)
       message.success("Product added successfully !")
       handleClose()
-
+      mutate(`/api/product?page=${page}&limit=${limit}`)
     } 
     catch (error) {
       clientCatchError(error)
@@ -87,22 +115,17 @@ const Products = () => {
     try {
       await axios.delete(`/api/product/${id}`)
       mutate(`/api/product?page=${page}&limit=${limit}`)
-      message.success("Product delted successfully.!")
+      message.success("Product deleted successfully.!")
     } 
     catch (error) {
       clientCatchError(error)  
     }
   }
 
-  const handleEditProduct = async(product:ProductInterface)=>{
-    try {
-      setEditId(product._id)
-      setOpen(true)
-      productForm.setFieldsValue(product)
-    } 
-    catch (error) {
-      clientCatchError(error)  
-    }
+  const handleEditProduct = (product:ProductInterface)=>{
+    setEditId(product._id)
+    setOpen(true)
+    productForm.setFieldsValue(product)
   }
 
   const handleSaveProduct = async(value: ProductFormValues)=>{
@@ -123,11 +146,9 @@ const Products = () => {
       input.type = "file"
       input.accept = "image/*"
       input.click()
-
       input.onchange = async ()=>{
         if(!input.files)
           return message.error("File not selected")
-
         const file = input.files[0]
         input.remove()
         const formData = new FormData()
@@ -144,7 +165,6 @@ const Products = () => {
   }
 
   if(error){
-    console.log(error)
     return(
         <Result
           status="error"
@@ -154,26 +174,23 @@ const Products = () => {
   }
 
   if (isLoading) {
-    return <Skeleton active/>
+    return <Skeleton active paragraph={{ rows: 15 }}/>
   }
 
   return (
     <div className='flex flex-col gap-8'>
-      <div className='flex justify-between items-center'>
-        <Form onFinish={onSerach}>
-          <Form.Item name="search" rules={[{required:true}]} className='mb-0! w-87.5'>
-            <Input
-              placeholder='Search this site' 
-              suffix={<Button htmlType='submit' type='text' icon={<SearchOutlined />}/>}
-              className=''
-            />
-          </Form.Item>
-        </Form>
+      <div className='flex justify-between items-center gap-8'>
+        <Input
+          placeholder='Search this site' 
+          size='large'
+          onChange={onSearch}
+          className='w-140!'
+        />
         <Button onClick={()=>setOpen(true)} type='primary' size='large' icon={<PlusOutlined />} className='bg-indigo-500!'>Add Product</Button>
       </div>
       <div className='grid grid-cols-4 gap-4'>
         {
-          data.products.map((item:ProductInterface,index:number)=>(
+          products.map((item:ProductInterface,index:number)=>(
             <Card
               key={index}
               hoverable
@@ -210,7 +227,7 @@ const Products = () => {
 
       <div className='flex justify-end w-full'>
         <Pagination
-          total={data.totalNoProduct}
+          total={totalNoProduct}
           onChange={handlePaginate}
           current={page}
           pageSizeOptions={[16,32,64,100]}
