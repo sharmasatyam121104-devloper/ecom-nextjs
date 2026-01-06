@@ -12,13 +12,13 @@ const Users = () => {
           <Card key={index} hoverable>
             <div className='flex flex-col items-center gap-6'>
               <Image 
-                      src="/images/blank.jpg"
-                      width={100}
-                      height={100}
-                      alt={`avt${index}`}
-                      objectFit='cover'
-                      style={{width: 'auto', height: 'auto'}}
-                      className='rounded-full'
+                  src="/images/blank.jpg"
+                  width={100}
+                  height={100}
+                  alt={`avt${index}`}
+                  style={{width: 'auto', height: 'auto'}}
+                  className='rounded-full object-cover'
+                  loading='eager'
                   />
                   <Card.Meta
                   title="User Name"

@@ -1,11 +1,13 @@
-import React from 'react';
+import Product from "@/components/Product";
 
-const page = () => {
-  return (
-    <div>
-      page
-    </div>
-  );
+const HomeRouter = async() => {
+const productRes = await fetch(`${process.env.SERVER}/api/product`)
+if (!productRes.ok) {
+  throw new Error("Failed to fetch products")
+}
+const products = await productRes.json()
+  
+  return (<Product data={products}/> );
 }
 
-export default page;
+export default HomeRouter;

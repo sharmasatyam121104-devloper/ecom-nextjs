@@ -8,6 +8,7 @@ const Logo = () => {
         height={50}
         alt="logo"
         priority
+        loading='eager'
         style={{width: 'auto', height: 'auto'}}
     />
   )

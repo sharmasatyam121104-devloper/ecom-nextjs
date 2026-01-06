@@ -66,7 +66,7 @@ const Products = () => {
   const onSearch = debounce(async(e: React.ChangeEvent<HTMLInputElement>)=>{
     try {
       const value = e.target.value.trim()
-      const {data} = await axios.get(`/api/product?search=${value}`)
+      const {data} = await axios.get(`/api/product?search=${value}&page=${page}&limit=${limit}`)
       // Agar search karna hai to local state use karo
       // ya SWR mutate karo
       mutate(`/api/product?page=${page}&limit=${limit}`, data, false)
@@ -197,7 +197,7 @@ const Products = () => {
               cover={
                 <div className='relative w-full h-45'>
                   <Popconfirm title="Do You Want to Change Image?" onConfirm={()=>handleChangeImage(item._id)}>
-                   <Image src={item.image} layout='fill' alt={`product-${index}`} objectFit='cover' className='rounded-t-lg'/>
+                   <Image src={item.image} loading='eager' fill alt={`product-${item.title}`} className='rounded-t-lg object-cover' sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                   </Popconfirm>
                 </div>
               }
