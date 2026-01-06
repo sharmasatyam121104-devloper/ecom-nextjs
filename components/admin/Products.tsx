@@ -19,6 +19,7 @@ import axios from 'axios'
 import useSWR, { mutate } from 'swr'
 import fetcher from '@/lib/fetcher'
 import { debounce } from 'lodash'
+import getPrice from '@/lib/priceCalculate'
 
 interface UploadValue {
   file: UploadFile
@@ -30,6 +31,7 @@ interface ProductFormValues {
   price: number
   discount: number
   image: UploadValue
+  quantity: number
 }
 
 interface ProductInterface {
@@ -83,6 +85,7 @@ const Products = () => {
   }
 
   const handleCreateProduct = async(values: ProductFormValues)=>{
+    console.log("FORM VALUES 👉", values); 
     try {
       const imageFile: File | undefined = values.image?.file?.originFileObj
       if (!imageFile) {
@@ -94,7 +97,9 @@ const Products = () => {
       formData.append("description", values.description)
       formData.append("price", String(values.price))
       formData.append("discount", String(values.discount))
+      formData.append("quantity", String(values.quantity))
       formData.append("image", imageFile)
+      console.log(formData);
         
       await axios.post('/api/product', formData)
       message.success("Product added successfully !")
@@ -212,7 +217,7 @@ const Products = () => {
                 title={item.title}
                 description={
                   <div className='flex gap-2'>
-                    <label>₹{item.price}</label>
+                    <label>₹{getPrice(item.price,item.discount || 0)}</label>
                     <del>₹{item.price}</del>
                     <label>({item.discount}% Off)</label>
                   </div>

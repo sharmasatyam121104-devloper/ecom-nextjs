@@ -18,6 +18,7 @@ export const POST = async(req: NextRequest)=>{
         const description = formData.get("description")?.toString() || ""
         const price = Number(formData.get("price"))
         const discount = Number(formData.get("discount") || 0)
+        const quantity  = Number(formData.get("quantity") || 0)
         const file = formData.get("image") as File | null
 
         if (!file) {
@@ -27,9 +28,9 @@ export const POST = async(req: NextRequest)=>{
             )
         }
 
-        if (!title || !description || price === undefined) {
+        if (!title || !description || price === undefined || quantity === undefined ) {
             return res.json(
-                { error: "Title, description, and price are required" },
+                { error: "Title, description, quantity, and price are required" },
                 { status: 400 }
             )
         }
@@ -41,9 +42,9 @@ export const POST = async(req: NextRequest)=>{
             )
         }
 
-        if (typeof price !== "number" || (discount && typeof discount !== "number")) {
+        if (typeof price !== "number" || (discount && typeof discount !== "number") || (quantity && typeof quantity !== "number")) {
             return res.json(
-                { error: "Price and discount must be numbers" },
+                { error: "Price, quantity, and discount must be numbers" },
                 { status: 400 }
             )
         }
@@ -62,6 +63,7 @@ export const POST = async(req: NextRequest)=>{
         description,
         price,
         discount: discount || 0,
+        quantity,
         image: `/products/${fileName}`
         }
 
