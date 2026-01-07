@@ -27,6 +27,14 @@ const siderStyle: React.CSSProperties = {
   scrollbarGutter: 'stable',
 };
 
+  export const getBreadCrambs = (pathName:string)=>{
+    const arr = pathName.split("/")
+    const bread = arr.map((item)=>({
+      title: item
+    }))
+    return bread
+  }
+
 const AdminLayout: FC<ChildrenInterface> = ({children}) => {
   
   const {
@@ -78,13 +86,7 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
     ]
   }
 
-  const getBreadCrambs = (pathName:string)=>{
-    const arr = pathName.split("/")
-    const bread = arr.map((item)=>({
-      title: item
-    }))
-    return bread
-  }
+
 
   return (
     <Layout hasSider>

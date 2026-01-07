@@ -16,7 +16,7 @@ interface LoginValueInterfce {
 }
 
 const Login = () => {
-  const onFinish = (values: LoginValueInterfce) => {
+  const login = (values: LoginValueInterfce) => {
     console.log(values)
   }
 
@@ -46,7 +46,7 @@ const Login = () => {
             </h2>
             </div>
 
-            <Form layout="vertical" onFinish={onFinish}>
+            <Form layout="vertical" onFinish={login}>
 
               {/* Email */}
               <Form.Item
