@@ -9,6 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Logo from './shared/Logo'
 import { signIn } from 'next-auth/react'
+import clientCatchError from '@/lib/client-catch-error'
 
 
 
@@ -27,7 +28,23 @@ const Login = () => {
       redirect: true,
       callbackUrl: "/",
     }
+
     await signIn("credentials", payLoad)
+  }
+
+  //handle login with google
+  const loginWithGoogle = async() => {
+    try {
+      const payLoad = {
+        redirect: true,
+        callbackUrl: "/",
+      }
+      const res = await signIn('google', payLoad)
+      console.log(res);
+    } 
+    catch (error) {
+      clientCatchError(error)
+    }
   }
 
   return (
@@ -93,7 +110,7 @@ const Login = () => {
               <Divider>OR</Divider>
 
               {/* Google */}
-              <Button icon={<GoogleOutlined  />} block className='hover:text-red-500!'>
+              <Button onClick={loginWithGoogle} icon={<GoogleOutlined  />} block className='hover:text-red-500!'>
                 Continue with Google
               </Button>
 

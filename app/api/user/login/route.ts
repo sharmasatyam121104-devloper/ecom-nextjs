@@ -8,7 +8,10 @@ import { NextRequest, NextResponse as res } from "next/server";
 
 export const POST = async(req: NextRequest)=>{
     try {
-        const {email, password} = await req.json()
+        const body = await req.json()
+        const email = body.email
+        const password = body.password
+        const provider = body.provider
 
         if (Array.isArray(email)) {
             return res.json(
@@ -17,11 +20,23 @@ export const POST = async(req: NextRequest)=>{
             );
         }
 
+        
         const user =  await UserModel.findOne({email})
+        
+        const payload = {
+            id: user._id,
+            name: user.fullname,
+            email: user.email,
+        }
 
         if(!user) {
             return res.json({message: "user not found"},{status: 404})
         }
+        
+        if(provider === "google") {
+            return res.json(payload)
+        }
+
 
         const isPasswordCorrect = await user.comparePassword(password);
 
@@ -29,11 +44,6 @@ export const POST = async(req: NextRequest)=>{
             return res.json({message: "Invalid credentials"},{status: 401})
         }
 
-        const payload = {
-            id: user._id,
-            name: user.fullname,
-            email: user.email,
-        }
 
         return res.json(payload)
     } 

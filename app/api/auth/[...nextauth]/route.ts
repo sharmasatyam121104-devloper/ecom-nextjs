@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
 
 interface CustomSessionInterface extends Session {
@@ -38,15 +39,43 @@ export const authOptions: NextAuthOptions = {
                     return null
                 }
             }
+        }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
         })
     ],
     pages: {
-        signIn: '/login'
+        signIn: '/login',
+        error: '/auth-failed'
     },
     session: {
         strategy: 'jwt'
     },
     callbacks: {
+        async signIn({user,account}) {
+            const customUser = user as CustomUserInterface
+            if(account?.provider === "google") {
+                try {
+                    const payload = {
+                        email: customUser?.email,
+                        provider: 'google'
+                    }
+                    const {data} = await axios.post(`${process.env.SERVER}/api/user/login`, payload)
+                    customUser.id = data.id
+                    customUser.email = data.email
+                    customUser.name = data.name
+                    return true
+                }
+                catch(error)
+                {
+                    console.log("AUTHORIZE ERROR:", error)
+                    return false
+                }
+            }
+
+            return true
+        },
         async jwt({token, user}) {
             const customUser = user as CustomUserInterface
 
