@@ -29,7 +29,13 @@ export const POST = async(req: NextRequest)=>{
             return res.json({message: "Invalid credentials"},{status: 401})
         }
 
-        return res.json({message: "Login Success"})
+        const payload = {
+            id: user._id,
+            name: user.fullname,
+            email: user.email,
+        }
+
+        return res.json(payload)
     } 
     catch (error) {
         return serverCatchError(error)

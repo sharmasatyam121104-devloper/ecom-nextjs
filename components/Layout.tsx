@@ -5,8 +5,10 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import  { FC } from 'react';
 import Logo from './shared/Logo';
 import Link from 'next/link';
-import { UserAddOutlined } from '@ant-design/icons';
+import { LogoutOutlined, ProfileOutlined, SettingOutlined, UserAddOutlined } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
+import { Avatar, Dropdown } from 'antd';
+import { useSession } from 'next-auth/react';
 
 const menus = [
   {
@@ -29,6 +31,8 @@ const menus = [
 
 const Layout: FC<ChildrenInterface> = ({children}) => {
   const pathname = usePathname()
+  const session = useSession()
+  console.log(session);
   
   const blacklists = [
     "/admin",
@@ -36,6 +40,26 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
     "/signup",
     "/user"
   ]
+
+    const accountMenu = {
+    items: [
+      {
+        icon: <ProfileOutlined/>,
+        label: <a>FullName</a>,
+        key: 'fullName'
+      },
+      {
+        icon: <LogoutOutlined/>,
+        label: <a>Logout</a>,
+        key: 'logout'
+      },
+      {
+        icon: <SettingOutlined/>,
+        label: <a>Setting</a>,
+        key: 'setting'
+      },
+    ]
+  }
 
   const isBlacklist = blacklists.some((path)=>pathname.startsWith(path))
 
@@ -46,7 +70,7 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
     </AntdRegistry>
   )
   return (
-    <div className=' bg-white text-black'>
+    <div className=''>
         <AntdRegistry>
           <nav className='bg-white shadow-lg px-12 sticky top-0 left-0 flex justify-between items-center z-10' >
             <Logo />
@@ -63,6 +87,14 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
               <UserAddOutlined className='mr-2' />
               Sign up
             </Link>
+            <Dropdown
+                menu={accountMenu}
+              >
+                <Avatar
+                  size="large"
+                  src="/images/blank.jpg"
+                />
+            </Dropdown>
           </nav>
           <div className=' bg-whit w-9/12 mx-auto py-24'> {children} </div>
           <footer className='bg-zinc-900 h-112.5 flex items-center justify-center text-white text-4xl '>

@@ -8,6 +8,8 @@ import { Button, Card, Divider, Form, Input } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import Logo from './shared/Logo'
+import { signIn } from 'next-auth/react'
+
 
 
 interface LoginValueInterfce {
@@ -16,8 +18,16 @@ interface LoginValueInterfce {
 }
 
 const Login = () => {
-  const login = (values: LoginValueInterfce) => {
-    console.log(values)
+
+  //handle login function
+  const login = async(values: LoginValueInterfce) => {
+    
+    const payLoad = {
+      ...values,
+      redirect: true,
+      callbackUrl: "/",
+    }
+    await signIn("credentials", payLoad)
   }
 
   return (
@@ -83,14 +93,14 @@ const Login = () => {
               <Divider>OR</Divider>
 
               {/* Google */}
-              <Button icon={<GoogleOutlined />} block>
+              <Button icon={<GoogleOutlined  />} block className='hover:text-red-500!'>
                 Continue with Google
               </Button>
 
               {/* Redirect */}
               <p className="text-center mt-4">
                 Don&#39;t have an account?{' '}
-                <Link href="/signup" className="text-blue-600">
+                <Link href="/signup" className="text-blue-600 hover:underline!">
                   Sign Up
                 </Link>
               </p>

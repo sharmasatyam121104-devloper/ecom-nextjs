@@ -4,10 +4,14 @@ import {
   MailOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, Card, Form, Input } from 'antd'
+import { Button, Card, Form, Input, message } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import Logo from './shared/Logo'
+import clientCatchError from '@/lib/client-catch-error'
+import axios from 'axios'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface SignupValueInterfce {
     fullname: string
@@ -16,8 +20,23 @@ interface SignupValueInterfce {
 }
 
 const Signup = () => {
-  const onFinish = (values: SignupValueInterfce) => {
-    console.log(values)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+
+  const handleSignup = async(values: SignupValueInterfce) => {
+    try {
+      setIsLoading(true)
+      await axios.post('/api/user/signup', values)
+      message.success("Signup success")
+      router.push('/login')
+    } 
+    catch (error) {
+      clientCatchError(error)
+    }
+    finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -46,7 +65,7 @@ const Signup = () => {
             </h2>
             </div>
 
-            <Form layout="vertical" onFinish={onFinish}>
+            <Form layout="vertical" onFinish={handleSignup}>
               {/* Full Name */}
               <Form.Item
                 label="Full Name"
@@ -87,7 +106,7 @@ const Signup = () => {
               </Form.Item>
 
               {/* Submit */}
-              <Button type="primary" htmlType="submit" block>
+              <Button type="primary" htmlType="submit" block loading={isLoading} disabled={isLoading}>
                 Sign Up
               </Button>
 
