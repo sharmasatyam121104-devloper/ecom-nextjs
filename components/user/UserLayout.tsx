@@ -7,9 +7,14 @@ import Link from 'next/link'
 import  { FC } from 'react'
 import { getBreadCrambs } from '../admin/AdminLayout'
 import { usePathname } from 'next/navigation'
+import { signOut } from 'next-auth/react'
 
 const UserLayout:FC<ChildrenInterface> = ({children}) => {
     const pathname = usePathname()
+
+    const handleLogout = async()=>{
+      await signOut()
+    }
   
   const menus = [
     {
@@ -65,6 +70,7 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
               block
               size="large"
               icon={<LogoutOutlined />}
+              onClick={handleLogout}
               className="bg-white text-indigo-600 font-medium hover:bg-indigo-50!"
             >
               Logout

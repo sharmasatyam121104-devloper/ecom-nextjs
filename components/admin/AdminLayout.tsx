@@ -14,6 +14,7 @@ import Link from 'next/link';
 import ChildrenInterface from '@/interfaces/children.interfsce';
 import Logo from '../shared/Logo';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 const { Header, Content, Sider } = Layout;
 
@@ -42,6 +43,10 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
   } = theme.useToken();
 
   const pathName = usePathname()
+
+  const handleLogout = async()=>{
+    await signOut()
+  }
 
   const menu = [
     {
@@ -75,7 +80,7 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
       },
       {
         icon: <LogoutOutlined/>,
-        label: <a>Logout</a>,
+        label: <a onClick={handleLogout}>Logout</a>,
         key: 'logout'
       },
       {
@@ -85,6 +90,7 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
       },
     ]
   }
+
 
 
 
