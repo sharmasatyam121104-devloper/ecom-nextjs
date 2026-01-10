@@ -6,6 +6,7 @@ export interface IUser extends mongoose.Document {
   fullname: string;
   email: string;
   password: string;
+  role: string;
   comparePassword: (enteredPassword: string) => Promise<boolean>;
 }
 
@@ -28,11 +29,20 @@ const userSchema = new Schema<IUser>(
       required: true,
       minlength: 6,
     },
+    role: {
+      type:String
+    },
   },
   { timestamps: true }
 );
 
-// Hash password before save (TypeScript safe)
+// Forcing every user save as user
+userSchema.pre("save", function () {
+  this.role = "user";
+});
+
+
+// Hash password before save 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   

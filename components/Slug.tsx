@@ -46,7 +46,7 @@ const Slug = ({data}:SlugProps) => {
               />
             </div>
             <div>
-              <h1 className='text-2xl font-bold'>{data.title}</h1>
+              <h1 className='text-2xl font-bold capitalize'>{data.title}</h1>
               <Divider />
               <div className="flex items-center gap-3 text-xl">
                 <span className="font-bold text-green-600">₹{getPrice(data.price,data.discount)}</span>
