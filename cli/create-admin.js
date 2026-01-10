@@ -46,7 +46,7 @@ const rolePrompt = {
   message: chalk.white.bold("Action: Select Access Level"),
   choices: [
     { title: chalk.blue("👤 Create User"), value: "user" },
-    { title: chalk.magenta("🔑 Create Admini"), value: "admin" },
+    { title: chalk.magenta("🔑 Create Admin"), value: "admin" },
     { title: chalk.dim("🚪 Exit System"), value: "exit" }
   ],
   initial: 0

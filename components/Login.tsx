@@ -8,8 +8,9 @@ import { Button, Card, Divider, Form, Input } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import Logo from './shared/Logo'
-import { signIn } from 'next-auth/react'
+import { getSession, signIn } from 'next-auth/react'
 import clientCatchError from '@/lib/client-catch-error'
+import { useRouter } from 'next/navigation'
 
 
 
@@ -19,17 +20,33 @@ interface LoginValueInterfce {
 }
 
 const Login = () => {
+  const router = useRouter()
 
   //handle login function
   const login = async(values: LoginValueInterfce) => {
-    
-    const payLoad = {
-      ...values,
-      redirect: true,
-      callbackUrl: "/",
-    }
+    try {
+          const payLoad = {
+            ...values,
+            redirect: false,
+          }
+          await signIn("credentials", payLoad)
+          const session = await getSession()
 
-    await signIn("credentials", payLoad)
+          if(!session) {
+            throw new Error("Failed to login user")
+          }
+
+          if(session.user.role === "user") {
+            return router.replace("/user/orders")
+          }
+
+          if(session.user.role === "admin") {
+            return router.replace("/admin/orders")
+          }
+    } 
+    catch (error) {
+      clientCatchError(error)
+    }
   }
 
   //handle login with google
@@ -37,7 +54,7 @@ const Login = () => {
     try {
       const payLoad = {
         redirect: true,
-        callbackUrl: "/",
+        callbackUrl: "/user/orders",
       }
       const res = await signIn('google', payLoad)
       console.log(res);

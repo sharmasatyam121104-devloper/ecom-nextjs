@@ -32,7 +32,6 @@ const menus = [
 const Layout: FC<ChildrenInterface> = ({children}) => {
   const pathname = usePathname()
   const session = useSession()
-  console.log(session);
   
   const blacklists = [
     "/admin",
