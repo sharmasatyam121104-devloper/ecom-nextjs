@@ -126,8 +126,8 @@ const Orders = () => {
           <Select.Option value="returned">
             Returned
           </Select.Option>
-          <Select.Option value="deliverd">
-            Deliverd
+          <Select.Option value="delivered">
+            Delivered
           </Select.Option>
         </Select>
       )
