@@ -8,10 +8,28 @@ import ProductModel from "@/models/product.model";
 import { writeFileSync } from "fs";
 import path from "path";
 import { v4 as uuid } from 'uuid'
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 //Add a new product
 export const POST = async(req: NextRequest)=>{
     try {
+        //protected api 
+        const session = await getServerSession(authOptions)
+        if(!session) {
+            return res.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            )
+        }
+
+        if(session.user.role !== "admin") {
+            return res.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            )
+        }
+
         const formData = await req.formData()
 
         // Basic validation

@@ -6,9 +6,11 @@ import serverCatchError from "@/lib/server-catch-error";
 import { NextRequest, NextResponse as res } from "next/server";
 import SlugInterface from "@/interfaces/slug-interface";
 import ProductModel, { IProduct } from "@/models/product.model";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 
-//Add a new product
+//Find Product by slug
 export const GET = async (req: NextRequest, context: SlugInterface) => {
   try {
     const { slug } = await context.params
@@ -31,6 +33,22 @@ export const GET = async (req: NextRequest, context: SlugInterface) => {
 //upadte a product by slug as id
 export const PUT = async (req: NextRequest, context: SlugInterface) => {
   try {
+    //protected api 
+    const session = await getServerSession(authOptions)
+    if(!session) {
+        return res.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        )
+    }
+
+    if(session.user.role !== "admin") {
+        return res.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        )
+    }
+
     const { slug: id } = await context.params
     const body = await req.json()
     const { title, description, price, discount,quantity } = body
@@ -84,6 +102,22 @@ export const PUT = async (req: NextRequest, context: SlugInterface) => {
 //delte a product by slug as id
 export const DELETE = async (req: NextRequest, context: SlugInterface) => {
   try {
+    //protected api 
+    const session = await getServerSession(authOptions)
+    if(!session) {
+        return res.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        )
+    }
+
+    if(session.user.role !== "admin") {
+        return res.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        )
+    }
+
     const { slug: id } = await context.params
 
     // delte product

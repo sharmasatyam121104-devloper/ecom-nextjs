@@ -134,7 +134,7 @@ const Login = () => {
               {/* Redirect */}
               <p className="text-center mt-4">
                 Don&#39;t have an account?{' '}
-                <Link href="/signup" className="text-blue-600 hover:underline!">
+                <Link href="/signup" className="text-blue-600 hover:underline!" as="signup">
                   Sign Up
                 </Link>
               </p>
