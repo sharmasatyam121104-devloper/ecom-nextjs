@@ -3,20 +3,20 @@ import UserModel from "./user.models";
 import ProductModel from "./product.model";
 
 export interface OrderModelInterfce extends mongoose.Document {
-  userId: mongoose.Types.ObjectId
-  productId: mongoose.Types.ObjectId
+  user: mongoose.Types.ObjectId
+  product: mongoose.Types.ObjectId
   price: number
   discount: number
   status: "processing" | "dispatched" | "returned" | "delivered"
 }
 
 const orderSchema = new Schema<OrderModelInterfce>({
-    userId: {
+    user: {
         type: mongoose.Types.ObjectId,
         ref: UserModel,
         requred: true,
     },
-    productId: {
+    product: {
         type: mongoose.Types.ObjectId,
         ref: ProductModel,
         requred: true,

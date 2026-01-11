@@ -1,155 +1,124 @@
 'use client'
 
-import { Avatar, Select, Skeleton, Table } from "antd";
+import { OrderInterface } from "@/interfaces/orderData.interface";
+import clientCatchError from "@/lib/client-catch-error";
+import fetcher from "@/lib/fetcher";
+import { Avatar, message, Result, Select, Skeleton, Table, Tag } from "antd";
+import axios from "axios";
 import moment from "moment";
-
-export interface OrderInterface {
-  orderId: string
-  userId: string
-  product: Product
-  totalAmount: number
-  status: "success" | "pending" | "failed"
-  createdAt: string
-}
-
-export interface Product {
-  productId: string
-  productName: string
-  quantity: number
-  price: number
-}
-
-
-const data = [
-  {
-    "orderId": "ORD1001",
-    "userId": "USR001",
-    "product": {
-      "productId": "P001",
-      "productName": "Wireless Mouse",
-      "quantity": 2,
-      "price": 29.99
-    },
-    "totalAmount": 59.98,
-    "status": "pending",
-    "createdAt": "2025-06-05T10:00:00Z"
-  },
-  {
-    "orderId": "ORD1002",
-    "userId": "USR002",
-    "product": {
-      "productId": "P003",
-      "productName": "Bluetooth Headphones",
-      "quantity": 1,
-      "price": 59.99
-    },
-    "totalAmount": 59.99,
-    "status": "success",
-    "createdAt": "2025-06-04T12:45:00Z"
-  },
-  {
-    "orderId": "ORD1003",
-    "userId": "USR003",
-    "product": {
-      "productId": "P002",
-      "productName": "USB-C Charger",
-      "quantity": 3,
-      "price": 29.99
-    },
-    "totalAmount": 89.97,
-    "status": "error",
-    "createdAt": "2025-06-03T14:30:00Z"
-  },
-  {
-    "orderId": "ORD1004",
-    "userId": "USR004",
-    "product": {
-      "productId": "P004",
-      "productName": "Laptop Stand",
-      "quantity": 1,
-      "price": 49.99
-    },
-    "totalAmount": 49.99,
-    "status": "warning",
-    "createdAt": "2025-06-02T16:00:00Z"
-  }
-]
+import useSWR, { mutate } from "swr";
 
 const Orders = () => {
+  const { data, isLoading, error } = useSWR("/api/order", fetcher);
+
+  const handleStatusChange = async(status: string, id: string)=>{
+    try {
+      await axios.put(`/api/order/${id}`,{status})
+      mutate("/api/orde")
+      message.success(`Order status changed into:- ${status}`)
+    } 
+    catch (error) {
+      return clientCatchError(error)  
+    }
+  }
 
   const columns = [
     {
-      title:"Customer",
-      key: 'customer',
-      render:()=>(
-        <div className="flex gap-3">
-          <Avatar size="large" className="bg-orange-500!">M</Avatar>
+      title: "Customer",
+      key: "customer",
+      render: (item: OrderInterface) => (
+        <div className="flex gap-3 items-center">
+          <Avatar size="large" className="bg-orange-500">
+            {item.userId.fullname.charAt(0).toUpperCase()}
+          </Avatar>
           <div className="flex flex-col">
-            <h1 className="font-medium">User Name</h1>
-            <label className="text-gray-500">User@gmail.com</label>
+            <h1 className="font-medium capitalize">{item.userId.fullname}</h1>
+            <label className="text-gray-500">{item.userId.email}</label>
           </div>
         </div>
       ),
     },
     {
-      title:"Product",
-      key: 'product',
-      render: (item:OrderInterface)=>(
-        <label>{item.product.productName}</label>
-      )
+      title: "Product",
+      key: "product",
+      render: (item: OrderInterface) => (
+        <div>
+          <label className="font-medium">{item.productId.title}</label>
+        </div>
+      ),
     },
     {
-      title:"Price",
-      key: 'price',
-      render: (item:OrderInterface)=>(
-        <label>₹{item.product.price}</label>
-      )
+      title: "Price",
+      key: "price",
+      render: (item: OrderInterface) => (
+        <label>₹{item.productId.price}</label>
+      ),
     },
     {
-      title:"Address",
-      key: 'address',
-      render: ()=>(
-        <label className="text-gray-500">Flat 12B, Shanti Apartments, MG Road, Andheri East, Mumbai 400069</label>
-      )
+      title: "Address",
+      key: "address",
+      render: (item: OrderInterface) => (
+        <label className="text-gray-500 text-sm">
+          {item.address || "Flat 12B, Shanti Apartments, MG Road, Andheri East, Mumbai 400069"}
+        </label>
+      ),
     },
     {
-      title:"Status",
-      key: 'status',
-      render: ()=>(
-        <Select placeholder="Status" style={{width:120}}>
+      title: "Status",
+      key: "status",
+      render: (item: OrderInterface) => (
+        <Select
+          defaultValue={item.status}
+          style={{ width: 140 }}
+          className="font-medium"
+          onChange={(value)=>handleStatusChange(value,item._id)}
+        >
           <Select.Option value="processing">
-            Processing
+            <Tag color="orange">Processing</Tag>
           </Select.Option>
           <Select.Option value="dispatched">
-            Dispathed
+            <Tag color="blue">Dispatched</Tag>
           </Select.Option>
           <Select.Option value="returned">
-            Returned
+            <Tag color="red">Returned</Tag>
           </Select.Option>
           <Select.Option value="delivered">
-            Delivered
+            <Tag color="green">Delivered</Tag>
           </Select.Option>
         </Select>
-      )
+      ),
     },
     {
-      title:"Date",
-      key: 'date',
-      render: (item:OrderInterface)=>(
-        <label>{moment(item.createdAt).format('MMM DD, YYYY hh:mm A')}</label>
-      )
+      title: "Date",
+      key: "date",
+      render: (item: OrderInterface) => (
+        <label>{moment(item.createdAt).format("MMM DD, YYYY hh:mm:ss A")}</label>
+      ),
     },
-  ]
+  ];
+
+  if (isLoading) return <Skeleton active className="col-span-4" />;
+
+  if (error) {
+    return (
+      <Result
+        status="error"
+        title={error.message || "Something went wrong!"}
+      />
+    );
+  }
+
   return (
     <div className="space-y-8">
-      <Skeleton active />
-      <Table 
+      <Table
         columns={columns}
         dataSource={data}
-        rowKey="orderId"
+        rowKey="_id"
+        bordered
+        pagination={{ pageSize: 5 }}
       />
     </div>
   );
-}
+};
 
 export default Orders;

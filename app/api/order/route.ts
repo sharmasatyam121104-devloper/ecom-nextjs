@@ -9,6 +9,7 @@ import OrderModel from "@/models/order.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
+
 //Creat a order by user only
 export const POST = async(req: NextRequest)=>{
     try {
@@ -78,17 +79,19 @@ export const GET = async()=>{
         const role = session.user.role
 
         if(role === "user") {
-            order = await OrderModel.findById(session.user.id).sort({createdAt: -1})
+            order = await OrderModel.find({ user: session.user.id }).sort({createdAt: -1})
         }
 
         if(role === "admin") {
             order = await OrderModel.find().sort({createdAt: -1})
+            .populate("userId","fullname email mobile")
+            .populate("productId")
         }
 
         return res.json(order)
         
     } 
     catch (error) {
-        serverCatchError(error)    
+        return serverCatchError(error)    
     }
 }
