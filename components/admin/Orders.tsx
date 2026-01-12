@@ -15,7 +15,7 @@ const Orders = () => {
     try {
       await axios.put(`/api/order/${id}`,{status})
       mutate("/api/orde")
-      message.success(`Order status changed into:- ${status}`)
+      message.success(`Order status updated successfully to ${status}`)
     } 
     catch (error) {
       return clientCatchError(error)  

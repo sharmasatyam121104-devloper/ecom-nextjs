@@ -79,7 +79,7 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
         key: 'fullName'
       },
       {
-        icon: <LogoutOutlined/>,
+        icon: <LogoutOutlined onClick={handleLogout}/>,
         label: <a onClick={handleLogout}>Logout</a>,
         key: 'logout'
       },
