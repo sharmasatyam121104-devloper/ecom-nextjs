@@ -5,10 +5,10 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import  { FC } from 'react';
 import Logo from './shared/Logo';
 import Link from 'next/link';
-import { LogoutOutlined, ProfileOutlined, SettingOutlined, UserAddOutlined } from '@ant-design/icons';
+import { LogoutOutlined, ProfileOutlined, SettingOutlined, ShoppingCartOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
-import { Avatar, Dropdown } from 'antd';
-import { useSession } from 'next-auth/react';
+import { Avatar, Badge, Dropdown, Tooltip } from 'antd';
+import { signOut, useSession } from 'next-auth/react';
 
 const menus = [
   {
@@ -18,14 +18,6 @@ const menus = [
   {
     label: 'Products',
     href: '/products'
-  },
-  {
-    label: 'Carts',
-    href: '/carts'
-  },
-  {
-    label: 'Sign in',
-    href: '/login'
   }
 ]
 
@@ -40,25 +32,53 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
     "/user"
   ]
 
-    const accountMenu = {
+  const userMenu = {
     items: [
       {
-        icon: <ProfileOutlined/>,
-        label: <a>FullName</a>,
+        icon: <UserOutlined/>,
+        label:<Link href='/user/orders' className='capitalize'>{session && session.data?.user.name}</Link>,
         key: 'fullName'
       },
       {
-        icon: <LogoutOutlined/>,
-        label: <a>Logout</a>,
-        key: 'logout'
+        icon: <SettingOutlined/>,
+        label: <Link href='/user/settings' className='capitalize'>Settings</Link>,
+        key: 'setting'
       },
       {
-        icon: <SettingOutlined/>,
-        label: <a>Setting</a>,
-        key: 'setting'
+        icon: <LogoutOutlined/>,
+        label: <a onClick={()=>signOut()}>Logout</a>,
+        key: 'logout'
       },
     ]
   }
+
+  const adminMenu = {
+    items: [
+      {
+        icon: <UserOutlined/>,
+        label:<Link href='/admin/orders' className='capitalize'>{session && session.data?.user.name}</Link>,
+        key: 'fullName'
+      },
+      {
+        icon: <SettingOutlined/>,
+        label: <Link href='/admin/settings' className='capitalize'>Settings</Link>,
+        key: 'setting'
+      },
+      {
+        icon: <LogoutOutlined/>,
+        label: <a onClick={()=>signOut()}>Logout</a>,
+        key: 'logout'
+      },
+    ]
+  }
+
+ const getMenu = (role: string) => {
+  if (role === "user") return userMenu
+  if (role === "admin") return adminMenu
+
+  signOut()
+}
+
 
   const isBlacklist = blacklists.some((path)=>pathname.startsWith(path))
 
@@ -68,12 +88,13 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
       <div>{children}</div>
     </AntdRegistry>
   )
+
   return (
     <div className=''>
         <AntdRegistry>
-          <nav className='bg-white shadow-lg px-12 sticky top-0 left-0 flex justify-between items-center z-10' >
+          <nav className={`bg-white shadow-lg px-12 sticky top-0 left-0 flex ${!session && "gap-120"} ${session && "gap-100"} items-center z-10`} >
             <Logo />
-            <div className='flex items-center'>
+            <div className='flex items-center gap-8'>
                 {
                   menus.map((item, index)=>(
                     <Link key={index} href={item.href} className='py-6 px-12 hover:bg-blue-500 hover:text-white'>
@@ -81,19 +102,38 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
                     </Link>
                   ))
                 }
+                {
+                  !session.data && 
+                  <div className='animate__animated animate__fadeIn flex gap-8'>
+                    <Link href="/login" className='py-6 px-12 hover:bg-blue-500 hover:text-white flex'>
+                      <UserAddOutlined className='mr-2' />
+                      Login
+                    </Link>
+                    <Link href="/signup" className='py-6 px-12 hover:bg-blue-500 hover:text-white bg-rose-500 text-white font-medium flex'>
+                      <UserAddOutlined className='mr-2' />
+                      Sign up
+                    </Link>
+                  </div>
+                }
             </div>
-            <Link href="/signup" className='py-6 px-12 hover:bg-blue-500 hover:text-white bg-rose-500 text-white font-medium'>
-              <UserAddOutlined className='mr-2' />
-              Sign up
-            </Link>
-            <Dropdown
-                menu={accountMenu}
-              >
-                <Avatar
-                  size="large"
-                  src="/images/blank.jpg"
-                />
-            </Dropdown>
+            {
+              session.data && 
+              <div className='flex items-center gap-8 animate__animated animate__fadeIn'>
+                <Tooltip title="Your Cart's">
+                  <Badge>
+                    <ShoppingCartOutlined className='text-3xl! text-slate-400!'/>
+                  </Badge>
+                </Tooltip>
+                <Dropdown
+                    menu={getMenu(session?.data?.user?.role as string)}
+                  >
+                    <Avatar
+                      size="large"
+                      src="/images/blank.jpg"
+                    />
+                </Dropdown>
+              </div>
+            }
           </nav>
           <div className=' bg-whit w-9/12 mx-auto py-24'> {children} </div>
           <footer className='bg-zinc-900 h-112.5 flex items-center justify-center text-white text-4xl '>

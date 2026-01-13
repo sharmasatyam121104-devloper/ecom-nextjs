@@ -66,3 +66,35 @@ export const POST = async (req: NextRequest)=>{
         return   serverCatchError(error) 
     }
 }
+
+//Fetch card details for user
+export const GET = async ()=>{
+    try {
+        //protected api 
+        const session = await getServerSession(authOptions)
+        if(!session) {
+            return res.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            )
+        }
+
+        if(session.user.role !== "user") {
+            return res.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            )
+        }
+
+        const cart = await CartModel.find({userId: session.user.id})
+        .sort({createdAt: -1})
+        .populate('productId')
+
+        
+        return res.json(cart)
+
+    }
+    catch (error) {
+        return   serverCatchError(error) 
+    }
+}
