@@ -1,10 +1,14 @@
 'use client'
 import ProductsResponseInterface from "@/interfaces/productDataRes.interface"
+import clientCatchError from "@/lib/client-catch-error";
 import getPrice from "@/lib/priceCalculate";
 import { ArrowRightOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Button, Card } from "antd"
+import axios from "axios";
+import { getSession } from "next-auth/react";
 import Image from "next/image"
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ProductProps {
   data: ProductsResponseInterface;
@@ -12,6 +16,23 @@ interface ProductProps {
 
 
 const Product = ({ data }: ProductProps) => {
+  const router = useRouter()
+
+  const handleAddToCart = async(productId: string)=>{
+    try {
+      const session = await getSession()
+      if(!session){
+        return router.push("/login")
+      }
+
+      const {data} = await axios.post("/api/cart",{productId})
+      console.log(data);
+    } 
+    catch (error) {
+      clientCatchError(error)  
+    }
+  }
+
   return (
     <div>
       <div className='grid grid-cols-4 gap-8'>
@@ -32,8 +53,8 @@ const Product = ({ data }: ProductProps) => {
                 </div>
               }
               actions={[
-                <Button key='add-cart' icon={<ShoppingCartOutlined />} type="primary" className="">Add Cart</Button>,
-                <Link href={`/product/${item.slug}`} key='add-cart'>
+                <Button onClick={()=>handleAddToCart(item._id)} key='add-cart' icon={<ShoppingCartOutlined />} type="primary" className="">Add Cart</Button>,
+                <Link href={`/product/${item.slug}`} key='add-cart' as="font">
                   <Button  icon={<ArrowRightOutlined />} type="primary" className="bg-green-500! hover:bg-green-400!">Buy Now</Button>
                 </Link>
               ]}

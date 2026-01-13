@@ -37,7 +37,7 @@ const Login = () => {
           }
 
           if(session.user.role === "user") {
-            return router.replace("/user/orders")
+            return router.replace("/")
           }
 
           if(session.user.role === "admin") {
@@ -54,7 +54,7 @@ const Login = () => {
     try {
       const payLoad = {
         redirect: true,
-        callbackUrl: "/user/orders",
+        callbackUrl: "/",
       }
       const res = await signIn('google', payLoad)
       console.log(res);
