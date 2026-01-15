@@ -1,22 +1,37 @@
 'use client'
 import ChildrenInterface from '@/interfaces/children.interfsce'
-import { LogoutOutlined, ReconciliationOutlined, SettingOutlined, ShoppingOutlined } from '@ant-design/icons'
+import { HomeOutlined, LogoutOutlined, ReconciliationOutlined, SettingOutlined, ShoppingOutlined } from '@ant-design/icons'
 import { Avatar, Breadcrumb, Button, Card, Layout, Menu } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import Link from 'next/link'
 import  { FC } from 'react'
 import { getBreadCrambs } from '../admin/AdminLayout'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 const UserLayout:FC<ChildrenInterface> = ({children}) => {
     const pathname = usePathname()
+    const session  = useSession()
 
     const handleLogout = async()=>{
       await signOut()
     }
+
+    const getFirstLetter = ()=>{
+      const name = session.data?.user.name
+      if(!name){
+        return "!"
+      }
+      const firstLatter = name[0]
+      return firstLatter
+    }
   
   const menus = [
+    {
+      icon: <HomeOutlined />,
+      label: <Link href="/">Home</Link>,
+      key: 'home'
+    },
     {
       icon: <ShoppingOutlined />,
       label: <Link href="/user/carts">Carts</Link>,
@@ -36,7 +51,7 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
 
     return (
     <Layout className='min-h-screen bg-white'>
-        <Sider width={300} className="border-r! border-gray-100! bg-white relative! ">
+        <Sider width={300} className="border-r! border-gray-100! bg-white relative! h-screen!">
           {/* Menu */}
           <Menu
             theme="light"
@@ -52,15 +67,15 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
                 size={56}
                 className="bg-orange-500! text-xl! font-semibold!"
               >
-                S
+                {getFirstLetter()}
               </Avatar>
 
               <div className="leading-tight">
                 <h1 className="text-white font-medium text-base">
-                  Er Saurav
+                  {session && session.data?.user.name}
                 </h1>
                 <p className="text-indigo-200 text-sm">
-                  example@mail.com
+                  {session && session.data?.user.email}
                 </p>
               </div>
             </div>
@@ -78,14 +93,14 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
           </div>
         </Sider>
 
-        <Layout>
+        <Layout className='overflow-y-auto h-screen'>
           <Layout.Content>
             <div className='w-11/12 mx-auto py-8 min-h-screen'>
               <Breadcrumb
                 items={getBreadCrambs(pathname)}
               />
 
-              <Card className='mt-6!'>
+              <Card className='mt-6! overflow-y-auto!'>
                 {children}
               </Card>
             </div>

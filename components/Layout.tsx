@@ -5,10 +5,12 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import  { FC } from 'react';
 import Logo from './shared/Logo';
 import Link from 'next/link';
-import { LogoutOutlined, ProfileOutlined, SettingOutlined, ShoppingCartOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SettingOutlined, ShoppingCartOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
 import { Avatar, Badge, Dropdown, Tooltip } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
+import useSWR from 'swr';
+import fetcher from '@/lib/fetcher';
 
 const menus = [
   {
@@ -24,6 +26,8 @@ const menus = [
 const Layout: FC<ChildrenInterface> = ({children}) => {
   const pathname = usePathname()
   const session = useSession()
+
+  const {data} = useSWR('/api/cart?count=true',fetcher)
   
   const blacklists = [
     "/admin",
@@ -119,11 +123,16 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
             {
               session.data && 
               <div className='flex items-center gap-8 animate__animated animate__fadeIn'>
-                <Tooltip title="Your Cart's">
-                  <Badge>
-                    <ShoppingCartOutlined className='text-3xl! text-slate-400!'/>
-                  </Badge>
-                </Tooltip>
+                {
+                  session.data.user.role === "user" &&
+                  <Link href='/user/carts'>
+                    <Tooltip title="Your Cart's">
+                      <Badge count={data && data}>
+                        <ShoppingCartOutlined className='text-3xl! text-slate-400!'/>
+                      </Badge>
+                    </Tooltip>
+                  </Link>
+                }
                 <Dropdown
                     menu={getMenu(session?.data?.user?.role as string)}
                   >
