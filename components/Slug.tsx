@@ -1,8 +1,13 @@
 'use client'
+import clientCatchError from '@/lib/client-catch-error';
 import getPrice from '@/lib/priceCalculate';
 import {ShoppingCartOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Button, Card, Divider, Empty, Tag } from 'antd';
+import { Button, Card, Divider, Empty, message, Tag } from 'antd';
+import axios from 'axios';
+import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { mutate } from 'swr';
 
 
 interface ProductInterface {
@@ -21,6 +26,23 @@ interface SlugProps {
 }
 
 const Slug = ({data}:SlugProps) => {
+  const router = useRouter()
+
+    const handleAddToCart = async(productId: string)=>{
+      try {
+        const session = await getSession()
+        if(!session){
+          return router.push("/login") 
+        }
+  
+        await axios.post("/api/cart",{productId})
+        message.success('Product added to your Cart')
+        mutate('/api/cart?count=true')
+      } 
+      catch (error) {
+        clientCatchError(error)  
+      }
+    }
 
   if (!data) {
     return(
@@ -73,6 +95,7 @@ const Slug = ({data}:SlugProps) => {
               </p>
               <div className="mt-6 flex gap-4">
                 <Button
+                  onClick={()=>handleAddToCart(data._id)}
                   type="primary"
                   icon={<ShoppingCartOutlined />}
                   size="large"

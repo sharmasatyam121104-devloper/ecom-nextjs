@@ -4,9 +4,9 @@ import ProductModel from "./product.model";
 
 export interface OrderModelInterface extends mongoose.Document {
   userId: mongoose.Types.ObjectId;
-  productId: mongoose.Types.ObjectId;
-  price: number;
-  discount: number;
+  productIds : mongoose.Types.ObjectId[];
+  prices: number[];
+  discounts: number[];
   status: "processing" | "dispatched" | "returned" | "delivered";
 }
 
@@ -17,19 +17,19 @@ const orderSchema = new Schema<OrderModelInterface>(
       ref: UserModel, 
       required: true,
     },
-    productId: {
+    productIds: [{
       type: mongoose.Types.ObjectId,
       ref: ProductModel,
       required: true,
-    },
-    price: {
+    }],
+    prices: [{
       type: Number,
       required: true,
-    },
-    discount: {
+    }],
+    discounts: [{
       type: Number,
       required: true,
-    },
+    }],
     status: {
       type: String,
       default: "processing",
