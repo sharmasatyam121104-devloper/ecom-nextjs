@@ -28,7 +28,7 @@ interface SlugProps {
 const Slug = ({data}:SlugProps) => {
   const router = useRouter()
 
-    const handleAddToCart = async(productId: string)=>{
+    const handleAddToCart = async(productId: string,instruction: string)=>{
       try {
         const session = await getSession()
         if(!session){
@@ -38,6 +38,9 @@ const Slug = ({data}:SlugProps) => {
         await axios.post("/api/cart",{productId})
         message.success('Product added to your Cart')
         mutate('/api/cart?count=true')
+        if(instruction === "buy"){
+          return router.push("/user/carts") 
+        }
       } 
       catch (error) {
         clientCatchError(error)  
@@ -95,7 +98,7 @@ const Slug = ({data}:SlugProps) => {
               </p>
               <div className="mt-6 flex gap-4">
                 <Button
-                  onClick={()=>handleAddToCart(data._id)}
+                  onClick={()=>handleAddToCart(data._id,"add")}
                   type="primary"
                   icon={<ShoppingCartOutlined />}
                   size="large"
@@ -104,6 +107,7 @@ const Slug = ({data}:SlugProps) => {
                 </Button>
 
                 <Button
+                  onClick={()=>handleAddToCart(data._id,"buy")}
                   danger
                   type="primary"
                   icon={<ThunderboltOutlined />}

@@ -7,6 +7,7 @@ export interface OrderModelInterface extends mongoose.Document {
   productIds : mongoose.Types.ObjectId[];
   prices: number[];
   discounts: number[];
+  quantity: number[];
   status: "processing" | "dispatched" | "returned" | "delivered";
 }
 
@@ -27,6 +28,10 @@ const orderSchema = new Schema<OrderModelInterface>(
       required: true,
     }],
     discounts: [{
+      type: Number,
+      required: true,
+    }],
+    quantity: [{
       type: Number,
       required: true,
     }],

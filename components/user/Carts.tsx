@@ -11,6 +11,7 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr"
 import Pay from "../shared/pay";
 
+
 const Carts = () => {
   const {data, error, isLoading} = useSWR('/api/cart', fetcher)
   const [loading, setLoading] = useState({state: false, index:0, ButtonIndex:0})
@@ -67,6 +68,16 @@ const Carts = () => {
     );
   }
 
+  const orders = data.map((item: CartInterface) => ({
+    _id: item._id,
+    productId: item.productId._id, // ya item.productId if object
+    title: item.productId.title,
+    price: item.productId.price,
+    discount: item.productId.discount || 0,
+    quantity: item.qauantity,
+  }))
+
+console.log(orders);
 
   return (
   <div className="space-y-6">
@@ -216,11 +227,13 @@ const Carts = () => {
                     ₹{totalDiscounted.toFixed(0)}
                   </span>
                 </div>
-                <Pay 
+                <Pay
                   amount={totalDiscounted}
+                  orders={orders}
                   onSuccess={(x)=>console.log(x)}
                   onFailed={(x)=>console.log(x)}
                 />
+
               </div>
 
             </div>
