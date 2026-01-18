@@ -1,8 +1,10 @@
 import mongoose, { Schema, model, models } from "mongoose";
 import UserModel from "./user.models";
 import ProductModel from "./product.model";
+import { generateOrderId } from "@/lib/generateOrderId";
 
 export interface OrderModelInterface extends mongoose.Document {
+  userOrderId: string
   userId: mongoose.Types.ObjectId;
   productIds : mongoose.Types.ObjectId[];
   prices: number[];
@@ -13,6 +15,9 @@ export interface OrderModelInterface extends mongoose.Document {
 
 const orderSchema = new Schema<OrderModelInterface>(
   {
+    userOrderId: {
+      type: String,
+    },
     userId: {
       type: mongoose.Types.ObjectId,
       ref: UserModel, 
@@ -43,6 +48,13 @@ const orderSchema = new Schema<OrderModelInterface>(
   },
   { timestamps: true }
 );
+
+//  Auto-generate order id before save
+orderSchema.pre("save", function () {
+  if (!this.userOrderId) {
+    this.userOrderId = generateOrderId();
+  }
+});
 
 const OrderModel =
   models.Order || model<OrderModelInterface>("Order", orderSchema);

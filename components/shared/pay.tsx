@@ -6,6 +6,7 @@ import { Button } from "antd"
 import { useRazorpay, RazorpayOrderOptions } from "react-razorpay"
 import { useSession } from "next-auth/react"
 import { FC } from "react"
+import { useRouter } from 'next/navigation'
 
 interface OrderPayInterface {
     productId: string
@@ -46,6 +47,7 @@ interface PayInterface {
 const Pay: FC<PayInterface> = ({ amount, orders, onSuccess, onFailed }) => {
   const { Razorpay } = useRazorpay()
   const session = useSession()
+  const router = useRouter()
 
 
 
@@ -84,7 +86,10 @@ const Pay: FC<PayInterface> = ({ amount, orders, onSuccess, onFailed }) => {
           orders: JSON.stringify(ordersPayload)
         },
         handler: (response) => {
-          if (onSuccess) onSuccess(response)
+          if (onSuccess) {
+            onSuccess(response)
+            router.push('/user/orders')
+          }
         }
       }
 

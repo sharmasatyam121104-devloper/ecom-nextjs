@@ -79,7 +79,12 @@ export const GET = async()=>{
         const role = session.user.role
 
         if(role === "user") {
-            order = await OrderModel.find({ user: session.user.id }).sort({createdAt: -1})
+            order = await OrderModel.find({ userId: session.user.id }).sort({createdAt: -1})
+            .populate({
+                path: "productIds",
+                select: "title image",
+            })
+
         }
 
         if(role === "admin") {
