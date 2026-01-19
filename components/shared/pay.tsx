@@ -64,7 +64,7 @@ const Pay: FC<PayInterface> = ({ amount, orders, onSuccess, onFailed }) => {
 
         const ordersPayload = {
           productIds: ordersArray.map(o => typeof o.productId === 'object' ? o.productId : o.productId),
-          prices: ordersArray.map(o => o.price *o.quantity),
+          prices: ordersArray.map(o => o.price),
           discounts: ordersArray.map(o => o.discount || 0),
           quantity : ordersArray.map(o=> o.quantity)
         }

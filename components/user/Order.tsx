@@ -5,8 +5,9 @@ import Image from 'next/image'
 import moment from 'moment'
 import fetcher from '@/lib/fetcher'
 // List ko hata kar Flex add kiya gaya hai
-import { Card, Tag, Typography, Divider, Skeleton, Space, Badge, Flex } from 'antd'
+import { Card, Tag, Typography, Divider, Skeleton, Space, Badge, Flex, Result, Empty, Button } from 'antd'
 import { ShoppingOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import Link from 'next/link'
 
 const { Title, Text } = Typography
 
@@ -28,7 +29,7 @@ interface Order {
 }
 
 const OrdersPage = () => {
-  const { data, isLoading } = useSWR<Order[]>('/api/order', fetcher)
+  const { data, isLoading, error } = useSWR<Order[]>('/api/order', fetcher)
 
   const getStatusTag = (status: string) => {
     const statusConfig = {
@@ -52,6 +53,25 @@ const OrdersPage = () => {
     )
   }
 
+    if (error) {
+      return (
+        <Result
+          status="error"
+          title={error.message || "Something went wrong!"}
+        />
+      );
+    }
+  
+    if (data) {
+      if (data.length <= 0 ) {
+        return (
+          <Empty description="No orders found!">
+            <Link href="/"><Button>Add Product Now</Button></Link>
+          </Empty>
+        );
+      }
+    }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8 flex items-center gap-3">
@@ -59,7 +79,6 @@ const OrdersPage = () => {
         <Title level={2} style={{ margin: 0 }}>My Orders</Title>
       </div>
 
-      {/* List ki jagah direct Flex aur map ka use */}
       <Flex vertical gap="large">
         {data?.map((order) => {
           let totalPaid = 0
@@ -81,7 +100,7 @@ const OrdersPage = () => {
               title={
                 <div className="flex flex-wrap justify-between items-center py-2 gap-2">
                   <Space size={4}>
-                    <Text type="secondary" className="text-xs uppercase tracking-wider">Order ID</Text>
+                    <Text type="secondary" className="text-xs uppercase tracking-wider">Order ID:-</Text>
                     <Text strong className="font-mono">{order.userOrderId}</Text>
                   </Space>
                   <div className="text-right">
