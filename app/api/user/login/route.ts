@@ -29,7 +29,8 @@ export const POST = async (req: NextRequest) => {
       id: user._id.toString(),
       name: user.fullname,
       email: user.email,
-      role: user.role || "user"   //  fallback safety
+      role: user.role || "user" ,  
+      address: user.address
     }
 
     // Google login (no password check)

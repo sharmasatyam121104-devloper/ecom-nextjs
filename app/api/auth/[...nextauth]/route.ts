@@ -53,6 +53,7 @@ export const authOptions: NextAuthOptions = {
                     user.email = data.email
                     user.name = data.name
                     user.role = data.role
+                    user.address = data.address
                     return true
                 }
                 catch(error)
@@ -69,6 +70,7 @@ export const authOptions: NextAuthOptions = {
             {
                 token.id = user.id
                 token.role = user.role
+                token.address = user.address
             }
             return token
         },
@@ -77,6 +79,8 @@ export const authOptions: NextAuthOptions = {
             {
                 session.user.id = token.id as string
                 session.user.role = token.role as string
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                session.user.address = token.address as any 
             }
 
             return session

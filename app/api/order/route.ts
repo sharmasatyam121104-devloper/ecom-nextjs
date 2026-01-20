@@ -89,8 +89,14 @@ export const GET = async()=>{
 
         if(role === "admin") {
             order = await OrderModel.find().sort({createdAt: -1})
-            .populate("userId","fullname email mobile")
-            .populate("productId")
+            .populate({
+                path: "userId",
+                select: "fullname email address",
+            })
+            .populate({
+                path: "productIds",
+                select: "title image",
+            })
         }
 
         return res.json(order)

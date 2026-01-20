@@ -2,7 +2,7 @@
 
 import clientCatchError from "@/lib/client-catch-error"
 import axios from "axios"
-import { Button } from "antd"
+import { Button, message } from "antd"
 import { useRazorpay, RazorpayOrderOptions } from "react-razorpay"
 import { useSession } from "next-auth/react"
 import { FC } from "react"
@@ -50,11 +50,24 @@ const Pay: FC<PayInterface> = ({ amount, orders, onSuccess, onFailed }) => {
   const router = useRouter()
 
 
-
   // Checkout handler
   const handleCheckOut = async () => {
     try {
       if (!amount || amount <= 0) throw new Error("Invalid amount!")
+
+        if(!session) {
+          return router.push('/login')
+        }
+
+        if(session.data?.user.role !== "user") {
+          return router.push('/login')
+        }
+            
+        if(!session.data.user.address?.pincode) {
+          router.push('/user/settings')
+          message.warning("Please Provide Address.")
+          return
+        }
 
       // Create Razorpay order from backend
       const { data } = await axios.post('/api/razorpay/order', { amount })

@@ -8,6 +8,7 @@ import  { FC } from 'react'
 import { getBreadCrambs } from '../admin/AdminLayout'
 import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
+import Logo from '../shared/Logo'
 
 const UserLayout:FC<ChildrenInterface> = ({children}) => {
     const pathname = usePathname()
@@ -50,8 +51,11 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
   ]
 
     return (
-    <Layout className='min-h-screen bg-white'>
+    <Layout className='h-screen! overflow-y-hidden bg-white'>
         <Sider width={300} className="border-r! border-gray-100! bg-white relative! h-screen!">
+          <div className='bg-white p-2'>
+            <Logo/>
+          </div>
           {/* Menu */}
           <Menu
             theme="light"

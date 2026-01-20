@@ -11,6 +11,7 @@ import Logo from './shared/Logo'
 import { getSession, signIn } from 'next-auth/react'
 import clientCatchError from '@/lib/client-catch-error'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 
 
@@ -21,10 +22,12 @@ interface LoginValueInterfce {
 
 const Login = () => {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   //handle login function
   const login = async(values: LoginValueInterfce) => {
     try {
+          setLoading(true)
           const payLoad = {
             ...values,
             redirect: false,
@@ -47,20 +50,26 @@ const Login = () => {
     catch (error) {
       clientCatchError(error)
     }
+    finally{
+      setLoading(false)
+    }
   }
 
   //handle login with google
   const loginWithGoogle = async() => {
     try {
+      setLoading(true)
       const payLoad = {
         redirect: true,
         callbackUrl: "/",
       }
-      const res = await signIn('google', payLoad)
-      console.log(res);
+       await signIn('google', payLoad)
     } 
     catch (error) {
       clientCatchError(error)
+    }
+    finally{
+      setLoading(true)
     }
   }
 
@@ -102,6 +111,7 @@ const Login = () => {
                 ]}
               >
                 <Input
+                  size='large'
                   prefix={<MailOutlined />}
                   placeholder="Enter your email"
                 />
@@ -114,20 +124,34 @@ const Login = () => {
                 rules={[{ required: true, message: 'Please enter password' },{ min: 8, message: 'Password must be at least 8 characters' }]}
               >
                 <Input.Password
+                  size='large'
                   prefix={<LockOutlined />}
                   placeholder="Enter your password"
                 />
               </Form.Item>
 
               {/* Submit */}
-              <Button type="primary" htmlType="submit" block>
+              <Button 
+                size='middle'
+                loading={loading}
+                disabled={loading}
+                type="primary" 
+                htmlType="submit" block
+                >
                 Login
               </Button>
 
               <Divider>OR</Divider>
 
               {/* Google */}
-              <Button onClick={loginWithGoogle} icon={<GoogleOutlined  />} block className='hover:text-red-500!'>
+              <Button 
+                size='middle'
+                loading={loading}
+                disabled={loading}
+                onClick={loginWithGoogle} 
+                icon={<GoogleOutlined  />} 
+                block 
+                className='hover:text-red-500!'>
                 Continue with Google
               </Button>
 

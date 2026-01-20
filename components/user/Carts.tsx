@@ -159,8 +159,8 @@ console.log(orders);
             <Button 
               danger
               type="text" 
-              loading={loading.state && loading.index === index && loading.ButtonIndex === 1 }
-              onClick={()=>handleDeleteCartProduct(product._id,index, 1)}>
+              loading={loading.state && loading.index === index && loading.ButtonIndex === 2 }
+              onClick={()=>handleDeleteCartProduct(product._id,index, 2)}>
               Remove
             </Button>
           </div>

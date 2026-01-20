@@ -7,8 +7,19 @@ export interface IUser extends mongoose.Document {
   email: string;
   password: string;
   role: string;
+  address: AddressInterface;
   comparePassword: (enteredPassword: string) => Promise<boolean>;
 }
+
+export interface AddressInterface {
+  mobile: string
+  street: string
+  area: string
+  city: string
+  state: string
+  pincode: string
+}
+
 
 const userSchema = new Schema<IUser>(
   {
@@ -31,6 +42,32 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type:String
+    },
+    address: {
+      mobile: {
+        type: String,
+        default: null,
+      },
+      street: {
+        type: String,
+        default: null,
+      },
+      area: {
+        type: String,
+        default: null,
+      },
+      city: {
+        type: String,
+        default: null,
+      },
+      state: {
+        type: String,
+        default: null,
+      },
+      pincode: {
+        type: String,
+        default: null,
+      },
     },
   },
   { timestamps: true }

@@ -9,11 +9,27 @@ declare module "next-auth" {
             name?: string | null
             image?: string | null
             role?: string | null
+            address?: {
+                mobile: string
+                street: string
+                area: string
+                city: string
+                state: string
+                pincode: string
+            }
         }
     }
 
     interface User {
         id: string
         role: string
+        address: {
+                mobile: string
+                street: string
+                area: string
+                city: string
+                state: string
+                pincode: string
+            }
     }
 }

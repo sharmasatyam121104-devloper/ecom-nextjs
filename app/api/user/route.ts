@@ -30,6 +30,7 @@ export const GET = async()=>{
         return res.json(users)
 
     } catch (error) {
-        serverCatchError(error)
+        return serverCatchError(error)
     }
 }
+
