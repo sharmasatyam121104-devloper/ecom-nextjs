@@ -98,10 +98,25 @@ const Orders = () => {
       title: "Total Amount",
       key: "price",
       render: (item: AdminOrdersInterface) => {
-        const total = item.prices.reduce((acc, curr, idx) => acc + (curr * item.quantity[idx]), 0);
-        return <label className="font-bold text-gray-800">₹{total.toLocaleString()}</label>
+        const totalPayable = item.prices.reduce((acc, price, idx) => {
+          const qty = item.quantity[idx]
+          const discount = item.discounts[idx]
+
+          const mrp = price * qty
+          const discountAmount = (mrp * discount) / 100
+          const finalPrice = mrp - discountAmount
+
+          return acc + finalPrice
+        }, 0)
+
+        return (
+          <label className="font-bold text-gray-800">
+            ₹{Math.round(totalPayable).toLocaleString()}
+          </label>
+        )
       },
     },
+
     {
       title: "Shipping Address",
       key: "address",
