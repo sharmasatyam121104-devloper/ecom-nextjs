@@ -20,6 +20,12 @@ interface CreatePaymentInterface {
   userId: string;
   orderId: string;
   paymentId: string;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'success' | 'failed' | 'processing';
+  method: string;
+  tax: number;
+  fee: number;
   vendor?: "razorpay" | "stripe";
 }
 
@@ -104,6 +110,8 @@ export const POST = async (req: NextRequest) => {
     const userId = paymentEntity.notes.userId;
     const orders = JSON.parse(paymentEntity.notes.orders);
     const paymentId = paymentEntity.id;
+    const grossTotal = (paymentEntity.amount)/100;
+    const { currency, status,method,tax,fee  } = paymentEntity
 
     /* --------- 4. TYPE FIX --------- */
     orders.prices = orders.prices.map(Number);
@@ -116,6 +124,7 @@ export const POST = async (req: NextRequest) => {
       const orderId = await createOrder({
         userId,
         ...orders,
+        grossTotal,
       });
 
       if (!orderId) {
@@ -130,6 +139,12 @@ export const POST = async (req: NextRequest) => {
         orderId,
         paymentId,
         vendor: "razorpay",
+        amount: grossTotal,
+        currency,
+        status,
+        method,
+        tax,
+        fee,
       });
 
       if (!paymentCreated) {

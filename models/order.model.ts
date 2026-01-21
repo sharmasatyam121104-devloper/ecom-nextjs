@@ -10,6 +10,7 @@ export interface OrderModelInterface extends mongoose.Document {
   prices: number[];
   discounts: number[];
   quantity: number[];
+  grossTotal: number;
   status: "processing" | "dispatched" | "returned" | "delivered";
 }
 
@@ -40,6 +41,10 @@ const orderSchema = new Schema<OrderModelInterface>(
       type: Number,
       required: true,
     }],
+    grossTotal: {
+      type: Number,
+      required: true,
+    },
     status: {
       type: String,
       default: "processing",

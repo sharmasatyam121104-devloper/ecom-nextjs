@@ -172,7 +172,7 @@ const OrdersPage = () => {
                     </div>
 
                     <Text className="block mt-2 font-semibold text-green-600">
-                      Final Price: ₹{finalPrice}
+                      Final Price: ₹{finalPrice.toLocaleString()}
                     </Text>
                   </div>
                 </div>
@@ -183,17 +183,17 @@ const OrdersPage = () => {
             <div className="flex flex-col gap-2 text-right">
               <p>
                 <span className="text-gray-500">Total MRP:</span>{' '}
-                <span className="font-medium">₹{Math.round(totalMRP)}</span>
+                <span className="font-medium">₹{Math.round(totalMRP).toLocaleString()}</span>
               </p>
 
               <p className="text-green-600">
-                You Saved: ₹{Math.round(totalSaved)}
+                You Saved: ₹{Math.round(totalSaved).toLocaleString()}
               </p>
 
               <p className="text-lg font-semibold">
                 Total Payable Amount:{' '}
                 <span className="text-blue-600">
-                  ₹{Math.round(totalPayable)}
+                  ₹{Math.round(totalPayable).toLocaleString()}
                 </span>
               </p>
             </div>

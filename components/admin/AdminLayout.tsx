@@ -52,22 +52,22 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
     {
       icon: <ShopOutlined/>,
       label: <Link href="/admin/products">Products</Link>,
-      key: "products",
+      key: "/admin/products",
     },
     {
       icon: <ReconciliationOutlined/>,
       label: <Link href="/admin/orders">Orders</Link>,
-      key: "orders",
+      key: "/admin/orders",
     },
     {
       icon: <CreditCardOutlined/>,
       label: <Link href="/admin/payments">Payments</Link>,
-      key: "Payments",
+      key: "/admin/payments",
     },
     {
       icon: <UserSwitchOutlined/>,
       label: <Link href="/admin/users">Users</Link>,
-      key: "users",
+      key: "/admin/users",
     },
   ]
 
@@ -98,7 +98,7 @@ const AdminLayout: FC<ChildrenInterface> = ({children}) => {
     <Layout hasSider>
       <Sider style={siderStyle} width={280}>
         <div className="demo-logo-vertical" />
-        <Menu theme="dark" mode="inline" items={menu} />
+        <Menu theme="dark" mode="inline" items={menu} selectedKeys={[pathName]}/>
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }} className='flex items-center' >

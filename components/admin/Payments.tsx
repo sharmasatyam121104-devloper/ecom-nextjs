@@ -1,26 +1,42 @@
 'use client'
 
-import { PaymentInterface } from "@/interfaces/paymentData.interface";
 import fetcher from "@/lib/fetcher";
-import { Avatar, Result,  Skeleton, Table } from "antd";
+import { Avatar, Result,  Skeleton, Table, Tag } from "antd";
 import moment from "moment";
 import useSWR from "swr";
 
-export interface OrderInterface {
-  orderId: string
-  userId: string
-  product: Product
-  totalAmount: number
-  status: "success" | "pending" | "failed"
-  createdAt: string
+export interface AdminPaymentsInterface {
+  _id: string;
+
+  amount: number;
+  currency: 'INR';
+
+  fee: number;
+  tax: number;
+
+  method: 'upi' | 'card' | 'netbanking' | 'wallet';
+  status: 'created' | 'authorized' | 'captured' | 'failed';
+
+  paymentId: string;
+  vendor: 'razorpay';
+
+  orderId: {
+    userOrderId: string
+  }
+
+  userId: {
+    _id: string;
+    fullname: string;
+    email: string;
+  };
+
+  createdAt: string;
+  updatedAt: string;
+
+  __v: number;
 }
 
-export interface Product {
-  productId: string
-  productName: string
-  quantity: number
-  price: number
-}
+
 
 
 // const data = [
@@ -80,20 +96,14 @@ export interface Product {
 
 const Payments = () => {
   const {data, isLoading, error} = useSWR("/api/payment",fetcher)
+  console.log(data);
 
   const columns = [
     {
-      title:"Payment Id",
-      key: 'paymentId',
-      render: (item:PaymentInterface)=>(
-        // <label className="text-gray-500">Flat 12B, Shanti Apartments, MG Road, Andheri East, Mumbai 400069</label>
-        <p className="font-medium">{item.paymentId}</p>
-      )
-    },
-    {
       title:"Customer",
       key: 'customer',
-      render:(item:PaymentInterface)=>(
+      width: 250,
+      render:(item:AdminPaymentsInterface)=>(
         <div className="flex gap-3">
           <Avatar size="large" className="bg-orange-500!">M</Avatar>
           <div className="flex flex-col">
@@ -104,30 +114,74 @@ const Payments = () => {
       ),
     },
     {
-      title:"Product",
-      key: 'product',
-      render: (item:PaymentInterface)=>(
-        <label>{item.orderId.productId.title}</label>
+      title:"Payment Id",
+      key: 'paymentId',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <p className="font-medium">{item.paymentId}</p>
       )
     },
     {
-      title:"Amount",
-      key: 'amount',
-      render: (item:PaymentInterface)=>(
-        <label>₹{item.orderId.productId.price}</label>
+      title:"UserOrder Id",
+      key: 'userorderId',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <p className="font-medium">{item.orderId.userOrderId.split('-').pop()}</p>
       )
     },
     {
       title:"Vender",
       key: 'vender',
-      render: (item:PaymentInterface)=>(
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
         <label className="capitalize  font-semibold">{item.vendor}</label>
+      )
+    },
+    {
+      title:"Amount",
+      key: 'amount',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <label className="capitalize  font-semibold">₹{item.amount.toLocaleString()}</label>
+      )
+    },
+    {
+      title:"Fee",
+      key: 'fee',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <label className="capitalize  font-semibold">₹{(item.fee/100).toLocaleString()}</label>
+      )
+    },
+    {
+      title:"Tax",
+      key: 'tax',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <label className="capitalize  font-semibold">₹{(item.tax/100).toLocaleString()}</label>
+      )
+    },
+    {
+      title:"Method",
+      key: 'method',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <label className="capitalize  font-semibold">{item.method}</label>
+      )
+    },
+    {
+      title:"Status",
+      key: 'status',
+      width: 250,
+      render: (item:AdminPaymentsInterface)=>(
+        <Tag className="capitalize  font-semibold">{item.status}</Tag>
       )
     },
     {
       title:"Date",
       key: 'date',
-      render: (item: PaymentInterface)=>(
+      width: 250,
+      render: (item: AdminPaymentsInterface)=>(
         <label>{moment(item.createdAt).format('MMM DD, YYYY hh:mm A')}</label>
       )
     },
@@ -150,6 +204,7 @@ const Payments = () => {
         columns={columns}
         dataSource={data}
         rowKey="_id"
+        scroll={{x: 1500}}
       />
     </div>
   );

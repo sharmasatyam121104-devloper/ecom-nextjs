@@ -31,22 +31,22 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
     {
       icon: <HomeOutlined />,
       label: <Link href="/">Home</Link>,
-      key: 'home'
+      key: '/'
     },
     {
       icon: <ShoppingOutlined />,
       label: <Link href="/user/carts">Carts</Link>,
-      key: 'cart'
+      key: '/user/carts'
     },
     {
       icon: <ReconciliationOutlined />,
       label: <Link href="/user/orders">Orders</Link>,
-      key: 'orders'
+      key: '/user/orders'
     },
     {
       icon: <SettingOutlined />,
       label: <Link href="/user/settings">Settings</Link>,
-      key: 'settings'
+      key: '/user/settings'
     }
   ]
 
@@ -62,6 +62,7 @@ const UserLayout:FC<ChildrenInterface> = ({children}) => {
             mode="inline"
             items={menus}
             className="h-full! pb-44! py-4! "
+            selectedKeys={[pathname]}
           />
 
           {/* User Section */}

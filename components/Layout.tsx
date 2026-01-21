@@ -27,7 +27,16 @@ const Layout: FC<ChildrenInterface> = ({children}) => {
   const pathname = usePathname()
   const session = useSession()
 
-  const {data} = useSWR('/api/cart?count=true',fetcher)
+  const shouldFetchCart =
+  session.data?.user.role === "user" &&
+  (pathname === "/" || pathname.startsWith("/product"))
+
+
+  const { data } = useSWR(
+  shouldFetchCart ? '/api/cart?count=true' : null,
+  shouldFetchCart ? fetcher : null
+  )
+
   
   const blacklists = [
     "/admin",

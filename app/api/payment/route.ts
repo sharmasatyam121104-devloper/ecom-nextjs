@@ -38,15 +38,9 @@ export const GET = async ()=>{
         )
     }
     try {
-        const payments = await PaymentModel.find()
+        const payments = await PaymentModel.find().sort({createdAt: -1})
         .populate("userId", "fullname email")
-        .populate({
-            path: 'orderId',
-            populate: {
-            path: 'productId',
-            model: 'Product',
-            },
-        })
+        .populate("orderId", "userOrderId")
 
 
         return res.json(payments)
