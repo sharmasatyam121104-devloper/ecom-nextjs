@@ -81,7 +81,6 @@ const Pay: FC<PayInterface> = ({ amount, orders, onSuccess, onFailed }) => {
           discounts: ordersArray.map(o => o.discount || 0),
           quantity : ordersArray.map(o=> o.quantity)
         }
-        console.log("ORDERS PAYLOAD:", ordersPayload)
 
       const options: ModifiedRazorpayInterface = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,

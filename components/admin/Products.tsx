@@ -84,8 +84,7 @@ const Products = () => {
     productForm.resetFields()
   }
 
-  const handleCreateProduct = async(values: ProductFormValues)=>{
-    console.log("FORM VALUES 👉", values); 
+  const handleCreateProduct = async(values: ProductFormValues)=>{ 
     try {
       const imageFile: File | undefined = values.image?.file?.originFileObj
       if (!imageFile) {
@@ -99,7 +98,6 @@ const Products = () => {
       formData.append("discount", String(values.discount))
       formData.append("quantity", String(values.quantity))
       formData.append("image", imageFile)
-      console.log(formData);
         
       await axios.post('/api/product', formData)
       message.success("Product added successfully !")

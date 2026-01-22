@@ -31,7 +31,6 @@ export const POST = async(req: NextRequest)=>{
             )
         }
         const body = await req.json()
-        console.log("orders body :", body);
         const payload = {
             amount: Number(body.amount)*100,
             currency: "INR",

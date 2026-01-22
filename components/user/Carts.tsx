@@ -230,8 +230,6 @@ console.log(orders);
                 <Pay
                   amount={totalDiscounted}
                   orders={orders}
-                  onSuccess={(x)=>console.log(x)}
-                  onFailed={(x)=>console.log(x)}
                 />
 
               </div>

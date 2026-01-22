@@ -1,4 +1,8 @@
+export const dynamic = 'force-dynamic'
+
 import Product from "@/components/Product";
+
+export const revalidate =  86400
 
 const HomeRouter = async() => {
 const productRes = await fetch(`${process.env.SERVER}/api/product`)

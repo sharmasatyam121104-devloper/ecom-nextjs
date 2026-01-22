@@ -96,7 +96,6 @@ export interface AdminPaymentsInterface {
 
 const Payments = () => {
   const {data, isLoading, error} = useSWR("/api/payment",fetcher)
-  console.log(data);
 
   const columns = [
     {
